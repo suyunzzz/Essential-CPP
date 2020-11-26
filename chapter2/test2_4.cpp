@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-11-26 19:47:28
- * @LastEditTime: 2020-11-26 20:25:09
+ * @LastEditTime: 2020-11-26 22:41:14
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \EssentialCPP\chapter2\test2_4.cpp
@@ -28,11 +28,12 @@ vector<int>* getPentagonalArray(const int size)
 
     static vector<int> vec;
     cout<<"vec size:"<<vec.size()<<endl;
+    if(size>vec.size()){
     for(int i=vec.size()+1;i<=size;i++)
     {   
         cout<<"[getPentagonalArray] "<<i<<endl;
         vec.push_back( i*(3*i-1)/2 );
-    }
+    }}
 
     return &vec;
 
@@ -42,7 +43,7 @@ vector<int>* getPentagonalArray(const int size)
 int getPosNum(const vector<int>& vec,int pose)
 {   
     pose--;     // 第5个元素 应该是下标为4的
-    if(pose<0||pose>=vec.size())
+    if(pose<=0||pose>=vec.size())
     {
         cerr<<"Error"<<endl;
         return -1;
@@ -66,6 +67,18 @@ int main(int argc, char const *argv[])
     cout<<"ans: "<<ans<<endl;
 
     vector<int>* vec1=getPentagonalArray(10);
+    for(auto iter=vec1->begin(); iter!=vec1->end();iter++)
+    {
+        cout<<*iter<<" ";
+    }
+    cout<<endl;
+
+    ans=getPosNum(*vec1,10);
+    cout<<"ans: "<<ans<<endl;
+
+    // -----------------------------------
+
+    vec1=getPentagonalArray(8);
     for(auto iter=vec1->begin(); iter!=vec1->end();iter++)
     {
         cout<<*iter<<" ";
