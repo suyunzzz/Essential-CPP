@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-11-30 20:43:11
- * @LastEditTime: 2020-11-30 21:48:23
+ * @LastEditTime: 2020-12-01 09:40:31
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \chapter3\test_3_3.cpp
@@ -82,13 +82,47 @@ void display_map(  map<string,vstring>& family,ostream& os=cout)
     // num++;
 }
 
+void
+querry(const string& key,const map<string,vstring>& familyMap)
+{
+    map<string,vstring>::const_iterator it=familyMap.find(key);     // 常map，需要常指针指向
+    if(it!=familyMap.end())
+    {
+        cout<<"Found "<<it->first<<endl;
+        if(!it->second.empty()){
+            cout<<it->first<<" has "<<it->second.size()<<" Children"<<endl;
+            cout<<it->second<<endl;
+        }
+        else{
+            cout<<it->first<<" has no Child"<<endl;
+        }
+    }
 
+    else
+    {
+        cout<<"No such family "<<key<<endl;
+    }
+}
 
 int main(int argc, char const *argv[])
 {
     map<string,vstring> familyMap;
     ifstream ifs("test3_3.txt");
     readfile2map(ifs,familyMap);
+
+
+    // 查询
+    while(1)
+    {
+        cout<<"Please enter a family or q to quit: ";
+        string key;
+        cin >> key;
+        if(key=="q"|| key=="Q")
+        {
+            break;
+        } 
+        querry(key,familyMap);      // 查询
+    }
     ofstream ofs("test3_3_out.txt");
     display_map(familyMap,ofs);
     // cout<<familyMap<<endl;
