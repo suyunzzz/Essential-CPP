@@ -62,7 +62,13 @@ cin.clear();        // 清除end-of-file的设定
 - 只有`const static 成员`才能在类内进行初始化。
 
   ```cpp
-      const   static int _tests_run=9;        // const static 成员
+  class{
+      
+     ...
+     const   static int _tests_run=9;        // const static 成员 
+     ...
+  };    
+  
   ```
 
 - **<u>注意：static 成员变量的内存既不是在声明类时分配，也不是在创建对象时分配，而是在（类外）初始化时分配。反过来说，没有在类外初始化的 static 成员变量不能使用。</u>**
@@ -95,7 +101,87 @@ int Student::m_total = 10;
 
 ## 4.11 指针，指向Class Member Function
 
->  声明一个函数指针：
+### 指向non-class member function 的指针
+
+1. 使用typedef简化函数指针定义
+
+```cpp
+int test(int a)
+{
+    return a;
+}
+
+int main(int argc, char const *argv[])
+{
+    typedef int(*pf)(int);  // 定义一个函数指针类型
+    pf p=test;
+    auto b = p(5);
+    cout << b << endl;
+    return 0;
+}
+
+// 输出：5
+```
+
+2. 函数指针作为参数传递给函数
+
+```cpp
+#include <iostream>
+
+using namespace std;
+typedef int(*pf)(int);  
+
+
+int test(int a)
+{
+    return a;
+}
+
+int test2(pf p,int c)
+{   
+    cout<<"\ntest2(pf p,int c)\n"<<endl;
+    return p(c);
+}
+
+int main(int argc, char const *argv[])
+{
+    // typedef int(*pf)(int);  
+    // pf p=test;
+    auto b = test2(test,77);       // 接收两个参数，一个是函数指针，一个是int变量
+    cout << b << endl;
+    return 0;
+}
+
+```
+
+3. 利用函数指针，构造函数指针数组，更明确说就是构造指向函数的指针数组
+
+```cpp
+void t1() { cout<<"t1"<<endl;}
+void t2() { cout<<"t2"<<endl;}
+void t3() { cout<<"t3"<<endl;}
+
+
+typedef void(*pfunc)(void);         // 定义一个函数指针类型
+
+int main(int argc, char const *argv[])
+{
+    pfunc a[]={t1,t2,t3};       // 构造一个数组a[]，数组内部的成员放的是函数指针
+
+    a[0]();                        // 下标调用函数
+    a[1]();    
+    a[2]();
+    
+    return 0;
+}
+
+```
+
+
+
+### 指向class member function 的指针
+
+>  声明一个指向class member的函数指针：
 >
 > ```cpp
 > void (num_sequence::*pm)(int)=0;
@@ -120,5 +206,30 @@ int Student::m_total = 10;
 >
 > 
 
+### 两种指向辨析
 
+- 类成员函数指针指向类中的**静态成员函数**
+
+如果是指向static成员函数，那么定义的时候就不必添加类运算符号`::`，就像定义普通函数指针一样定义即可。调用的时候也无需传入`class object`。这和静态成员函数可以通过`class::func()`直接调用是相符的。
+
+>静态成员函数可以通过类来直接调用，编译器不会为它增加形参 this，它不需要当前对象的地址，所以不管有没有创建对象，都可以调用静态成员函数。
+
+```cpp
+    void(*pp)(void);                // 定义函数指针，static成员函数指针
+    // pp=a.p2;
+    cout<<"\n---"<<endl;            
+    pp=&A::funb;                    // 取地址，
+    pp();                           // static成员函数是可以直接运行的，不需要指定object
+```
+
+- 类成员函数指针指向类中的**非静态成员函数**
+
+定义的指针的时候需要添加类运算符`::`，在调用的时候需要通过`class object`调用。
+
+```cpp
+    void(A::*ppp)(void);            // 成员函数指针ppp,non-static
+    ppp=&A::funa;                   // 取地址
+    (a.*ppp)(); // "a"              // non-static成员函数，调用必须要有对象
+    (pa->*ppp)(); // "a"
+```
 
