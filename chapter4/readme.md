@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-12-01 09:51:11
- * @LastEditTime: 2020-12-01 20:10:11
+ * @LastEditTime: 2020-12-07 20:32:32
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \chapter4\readme.md
@@ -9,11 +9,79 @@
 # 基于对象的编程风格
 
 ## 4.1 如何实现一个class
+
+>默认的访问属性为private，保证了数据的安全性
+
+
 >`public member`可以在程序的任何地方被访问，`private member`只能在`member function`或是`class friend`内被访问。
 
 >如果一个成员函数在class内定义，那么会自动被视为inline函数。
 
 > test4_1相关的为P103的练习1和练习2
+
+> `4_3_*`为Triangular对应的类的实现。
+
+### 两个类相互包含对方成员的问题
+>参考：https://www.cnblogs.com/kevinGaoblog/archive/2012/04/26/2471844.html
+
+    问题情景：当有一个`class A`和一个`class B`，其中在`class A`中使用了`class B`的类型。
+    
+    如下：
+```cpp
+class A
+{
+    int i;
+    B b;
+}
+
+class B
+{
+    int i;
+    A a;
+}
+```
+**注意：上面这种情况其实是很难出现的，一般都是通过指针管理。**
+
+这样头文件相互包含在编译的时候是不能通过的，为了解决这个问题，有如下方案：
+```cpp
+// A.h
+#include "B.h"
+class A
+{
+    int i;
+    B b;
+}
+```
+
+```cpp
+// B.h
+class A;        // 声明一个 class A
+class B
+{
+    int i;
+    A a;
+}
+```
+
+```cpp
+// A.cpp
+// 正常实现
+```
+
+```cpp
+// B.cpp
+//在B.cpp中的文件包含处要有下面语句，否则不能调用成员A的任何内容
+#include "A.h"      
+B::B()
+{
+……
+}
+
+```
+>总结一下就是当俩个类相互
+
+
+
 
 - **tips**
 ```cpp
@@ -85,13 +153,92 @@ cin.clear();        // 清除end-of-file的设定
 int Student::m_total = 10;
 ```
 
-**初始化时可以赋初值，也可以不赋值。**如果不赋值，那么会被默认初始化为 0。全局数据区的变量都有默认的初始值 0，而动态数据区（堆区、栈区）变量的默认值是不确定的，一般认为是垃圾值。
+**初始化时可以赋初值，也可以不赋值。** 如果不赋值，那么会被默认初始化为 0。全局数据区的变量都有默认的初始值 0，而动态数据区（堆区、栈区）变量的默认值是不确定的，一般认为是垃圾值。
 
 4) 静态成员变量既**可以通过对象名访问，也可以通过类名访问**，但要**遵循 private、protected 和 public 关键字的访问权限限制**。当通过对象名访问时，对于不同的对象，**访问的是同一份内存**。
 
 ## 4.6 打造一个Iterator Class
 
 ## 4.7 合作关系必须建立在友谊的基础上
+### 友元函数
+在声明函数的时候，可以把一些函数（包括全局函数和其他类的成员函数）声明为“友元”，这样这些`外部函数`就是当前类的友元函数，在友元函数内部就可以访问当前类的私有成员了。
+
+将全局函数声明为友元的写法如下：
+
+>friend  返回值类型  函数名(参数表);
+
+
+将其他类的成员函数声明为友元的写法如下：
+
+>friend  返回值类型  其他类的类名::成员函数名(参数表);
+注意：不能把其他类的私有成员函数声明为友元。
+
+关于友元，如下：
+```cpp
+    #include<iostream>
+    using namespace std;
+    class CCar;  //提前声明CCar类，以便后面的CDriver类使用
+    class CDriver
+    {
+    public:
+        void ModifyCar(CCar* pCar);  //改装汽车
+    };
+    class CCar
+    {
+    private:
+        int price;
+        friend int MostExpensiveCar(CCar cars[], int total);  //声明友元
+        friend void CDriver::ModifyCar(CCar* pCar);  //声明友元
+    };
+    void CDriver::ModifyCar(CCar* pCar)
+    {
+        pCar->price += 1000;  //汽车改装后价值增加
+    }
+    int MostExpensiveCar(CCar cars[], int total)  //求最贵气车的价格
+    {
+        int tmpMax = -1;
+        for (int i = 0; i<total; ++i)
+            if (cars[i].price > tmpMax)
+                tmpMax = cars[i].price;
+        return tmpMax;
+    }
+    int main()
+    {
+        return 0;
+    }
+```
+其中，在`CCar类`中的友元用到了`CDriver类`，因此，在这句之前需要有`CDriver类`的声明。
+
+
+
+### 友元类
+
+一个类 A 可以将另一个类 B 声明为自己的友元，类 B 的所有成员函数就都可以访问类 A 对象的私有成员。在类定义中声明友元类的写法如下： 
+
+> friend  class  类名;
+
+```cpp
+class CCar
+{
+private:
+    int price;
+    friend class CDriver;  //声明 CDriver 为友元类
+};
+class CDriver
+{
+public:
+    CCar myCar;
+    void ModifyCar()  //改装汽车
+    {
+        myCar.price += 1000;  //因CDriver是CCar的友元类，故此处可以访问其私有成员
+    }
+};
+int main()
+{
+    return 0;
+}
+```
+其中，在CCar类中`friend class CDriver; `本身就是在声明一个CDriver类，因此不需要在之前提前定义。
 
 ## 4.8 实现一个copy assignment Operator
 
@@ -232,4 +379,9 @@ int main(int argc, char const *argv[])
     (a.*ppp)(); // "a"              // non-static成员函数，调用必须要有对象
     (pa->*ppp)(); // "a"
 ```
+
+
+
+## 练习
+> 4.4 ---> `test4_4.cpp` `4_4_main.cpp` `test4_4.h`
 
