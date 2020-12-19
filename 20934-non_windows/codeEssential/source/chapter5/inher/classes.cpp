@@ -35,14 +35,14 @@ class num_sequence {
 public:
 	typedef vector<unsigned int>::iterator iterator;
 
-    virtual ~num_sequence(){};
-	virtual num_sequence *clone() const = 0;
+    virtual ~num_sequence(){};				// 基类要将析构函数设置为虚析构函数
+	virtual num_sequence *clone() const = 0;		
 			 
 	virtual unsigned int elem( int pos ) const = 0;
 	virtual bool         is_elem(  unsigned int ) const=0;
 	virtual int          pos_elem( unsigned int ) const=0;
 
-    virtual const char*  what_am_i() const = 0;
+    virtual const char*  what_am_i() const = 0;				// 返回一个字符串
 	static  int          max_elems(){ return _max_elems; }
 	virtual ostream&     print( ostream &os = cout ) const = 0;
 	
@@ -64,7 +64,7 @@ public:
 	virtual	const vector<unsigned int>* sequence() const=0;
   
 protected:
-	// static const int    _max_elems = 1024;	
+	// static const int    _max_elems = 1024;		// static const 可以在类内直接赋值
 	// for compilers not supporting const static
 	enum { _max_elems = 1024 };
 

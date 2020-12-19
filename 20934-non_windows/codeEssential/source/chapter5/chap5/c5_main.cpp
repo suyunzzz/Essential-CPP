@@ -27,6 +27,33 @@ public:
 	}
 };
 
+class Magazine : public LibMat {
+public:
+	Magazine(const string& title,const string& author):
+		_title(title),_author(author){
+				cout << "Magazine::Magazine( " << _title
+			 << ", " << _author << " )  constructor\n";
+		}
+
+	~Magazine()
+	{
+		cout<<"Magazine::~Magazine() destructor!"<<endl;
+	}
+
+	void print() const{
+		cout<<"Magazine::print() -- I am a Magazine object!\n"
+			<<"My title is "<<_title<<"\n"
+			<<"My author is "<<_author<<endl;
+	}
+
+
+
+protected:
+	string _title;
+	string _author;
+
+};	// class Magazine
+
 class Book : public LibMat {
 public:
 	Book( const string &title, const string &author )
@@ -107,6 +134,12 @@ int main()
         cout << "\n" << "Creating a AudioBook object to print()\n";
 	    AudioBook ab( "Man Without Qualities", "Robert Musil", "Kenneth Meyer" );
 	    print( ab );
+	}
+
+	{
+        cout << "\n" << "Creating a Magazine object to print()\n";
+	    Magazine mg( "Man Without Qualities", "Robert Musil" );
+	    print( mg );
 	}
 
 	return 0; // unnecessary but quiets vc++
