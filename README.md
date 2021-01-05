@@ -7,8 +7,8 @@ Essential C++笔记+代码
 
 
 
-- chapter2 第二章面向过程的编程风格
-- chapter3 第三章泛型编程风格
-- chapter4 第四章基于对象的编程风格
-- chapter5 第五章面向对象编程风格
-
+- chapter2 第二章-面向过程的编程风格
+- chapter3 第三章-泛型编程风格
+- chapter4 第四章-基于对象的编程风格
+- chapter5 第五章-面向对象编程风格
+- chapter 第六章-以Template进行编程
