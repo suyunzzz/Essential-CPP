@@ -1,6 +1,6 @@
 # 异常处理
 
-*c++的异常处理机制就是完成通知任务*
+*c++的异常处理机制就是完成**通知任务***
 
 ## 7.1 抛出异常
 
@@ -186,6 +186,103 @@ return msg.c_str();
   > 使用istringstream
 
 
+
+## 练习 7.3
+
+代码结构
+
+- test7_3.cpp
+- Stack.h
+- Stack.cpp
+- ExceptionClass.cpp
+
+### 1、异常类的创建
+
+主要就是写两个异常类，继承自`exception`类，
+
+`exception`类如下所示：
+
+```cpp
+  class exception
+  {
+  public:
+    exception() _GLIBCXX_USE_NOEXCEPT { }
+    virtual ~exception() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_USE_NOEXCEPT;
+
+    /** Returns a C-style character string describing the general cause
+     *  of the current error.  */
+    virtual const char*
+    what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_USE_NOEXCEPT;
+  };
+```
+
+我们主要工作就是在继承类中重写`what()`虚函数，如下：
+
+>这里还是利用了`exception`这个类的`what`虚函数实现了多态
+
+```cpp
+class PushOnFull: public exception
+{
+public:
+    PushOnFull():_what("[Exception] Push on Full Stack!\n")
+    {}
+
+
+    virtual const char* what() const  _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_USE_NOEXCEPT
+    {
+        return _what.c_str();
+    }
+
+private:
+    string _what;
+};      // class PushOnFull
+```
+
+---
+
+### 2、异常的使用
+
+在Stack.cpp中的pop和push 函数中，丢出异常，如下：
+
+```cpp
+bool
+Stack::pop(elemType& elem)
+{
+    if(empty()) 
+    throw PopOnEmpty();         // 丢出一个异常
+
+
+    elem = _stack[_top--];
+    _stack.pop_back();
+    return true;
+}
+
+bool 
+Stack::push(elemType& elem)
+{   
+    if(full()) throw PushOnFull();          // 丢出一个异常
+    _stack.push_back(elem);     
+    _top++;
+    return true;
+
+}
+```
+
+在test7_3.cpp中，捕获异常，如下：
+
+> 这里就是使用基类引用指向派生类对象
+
+```cpp
+    elemType elem;
+    try{
+        s.pop(elem);
+    }
+    catch(const exception& ex)
+    {
+        printf("%s\n",ex.what());
+        // return 0;
+    }
+```
 
 
 

@@ -42,10 +42,10 @@ BTnode(const valType& val)
 
 如果传入了参数是一个class类型，那么在constructor中会有以下两个操作：
 
-1. class的默认构造函数会被调用，生成成员变量`_val`，
-2. 函数体内部会适应copy assignment将val复制给_val。
+1. class的默认**构造函数**会被调用，生成成员变量`_val`，
+2. 函数体内部会适应**copy assignment**将val复制给_val。
 
-但是如果我们选择第一种方式，只需要调用一个步骤就能完成：以copy constructor将val复制给_val。
+但是如果我们选择第一种方式，只需要调用一个步骤就能完成：以**copy constructor**将val复制给_val。
 
 综上，我们应该注意：
 
